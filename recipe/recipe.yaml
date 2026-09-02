@@ -1,0 +1,59 @@
+schema_version: 1
+
+context:
+  version: "1.1.2"
+
+package:
+  name: banal
+  version: ${{ version }}
+
+source:
+  # PyPI has no sdist from 1.1.0 onward: upstream publishes with
+  # `python -m build --wheel`. Use the tagged GitHub archive, which also
+  # carries LICENSE and the test suite.
+  url: https://github.com/pudo/banal/archive/refs/tags/${{ version }}.tar.gz
+  sha256: 4fa13afa462b7c601163fd5fa970c51ee24ebc8291c3fbc0598bdf2c2ed18a68
+
+build:
+  noarch: python
+  number: 0
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - hatchling
+    - pip
+  run:
+    - python >=${{ python_min }}
+
+tests:
+  - python:
+      imports:
+        - banal
+      pip_check: true
+      python_version: ["${{ python_min }}.*", "*"]
+  - script: pytest tests
+    files:
+      source:
+        - tests/
+    requirements:
+      run:
+        - pytest
+        - python ${{ python_min }}.*
+
+about:
+  homepage: http://github.com/pudo/banal
+  license: MIT
+  license_file: LICENSE
+  summary: Commons of banal micro-functions for Python.
+  description: |
+    A collection of small, dependency-free helper functions for everyday
+    Python work: coercing values to booleans and lists, flattening and
+    cleaning nested dictionaries, checking mapping and sequence types, and
+    caching keys for arbitrary objects.
+  repository: http://github.com/pudo/banal
+
+extra:
+  recipe-maintainers:
+    - vasudevanv
