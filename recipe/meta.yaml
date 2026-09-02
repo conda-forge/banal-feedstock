@@ -1,5 +1,5 @@
 {% set name = "banal" %}
-{% set version = "1.0.6" %}
+{% set version = "1.1.2" %}
 
 
 package:
@@ -7,28 +7,36 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/banal-{{ version }}.tar.gz
-  sha256: 2fe02c9305f53168441948f4a03dfbfa2eacc73db30db4a93309083cb0e250a5
+  # PyPI has no sdist from 1.1.0 onward: upstream publishes with
+  # `python -m build --wheel`. Use the tagged GitHub archive, which also
+  # carries LICENSE and the test suite.
+  url: https://github.com/pudo/banal/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4fa13afa462b7c601163fd5fa970c51ee24ebc8291c3fbc0598bdf2c2ed18a68
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
     - pip
+    - hatchling
     - python {{ python_min }}
   run:
     - python >={{ python_min }}
 
 test:
+  source_files:
+    - tests
   imports:
     - banal
   commands:
     - pip check
+    - pytest tests
   requires:
     - pip
+    - pytest
     - python {{ python_min }}
 
 about:
